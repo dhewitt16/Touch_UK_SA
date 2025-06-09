@@ -1,4 +1,4 @@
-Proposed EEG Analysis Pipeline – SA Data
+EEG Analysis Pipeline
 
 Brushing Data
 
@@ -20,7 +20,6 @@ d.	Using combined dataset, rereference to common average
 e.	Filter the data: high pass 1 Hz, low pass 70 Hz, notch 48-52 Hz (or equivalent 2Hz window either side of mains line noise) – check this is correctly done as the filtering has changed on EEGLAB
 i.	Currently kept 50 Hz line noise assuming this is correct for SA – confirm with Sahba – can also use CleanLineNoise instead if there are any variations
 f.	Save all as 1 combined .set file for each participant: T1_[SUBJECTID]_[SA]_allbrush.set
-  
   
   
 7.	Data cleaning – semi-automatic pipeline here  
@@ -46,12 +45,12 @@ Frequency Analysis
 1.	Using BrushSpa.m
 a.	Convert from EEGLAB to Fieldtrip (make sure fieldtrip is in the path)
 b.	Fieldtrip loads data into array of [participants x electrodes x frequency components x time x blocks]
-c.	Fieldtrip gets all the trials for each block, and gets the power within each frequency band (within the foi specified – 1 to 70 Hz) within the trial for the specified time window of interest (currently -2.5 to 5.5 around stimulus onset)
+c.	Fieldtrip gets all the trials for each block, and gets the power within each frequency band (within the foi specified – 1 to 70 Hz) within the trial for the specified time window of interest (-2.5 to 5.5 around stimulus onset)
 d.	Relative power in the band calculated by specifying the baseline interval (2 to -1), and computing relative change versus the trial – baseline correction not carried out yet
 e.	ERD is computed manually after power spectral decomposition, by subtracting baseline interval from the rest of the trial and multiplying by 100
 f.	Relative power for all conditions saved in G struct, with separate structs for each condition – G.ERD[cond].powspctrm 63 (els) x 70 (freq) x 61 (time)
 g.	Figures plotted if fplot.draw = 1
-2.	Using BrushStat.m – to be updated by DH – perhaps one script for all data at this point? TBD
+2.	Using BrushStat.m for UK or SA data
 a.	Specify participants for analysis
 b.	Select frequency band of interest – script needs to be run individually for each frequency band
 c.	Modify the epochTime if necessary (cfg.epochTime) – currently 0.5 to 4.9 to avoid sharp changes at the start and end of trial
@@ -61,15 +60,4 @@ f.	Topographic maps (and a blank electrode map) are created for the specified fr
 g.	Time frequency figures are created for the specific electrode/s of interest
 h.	If statistics are requested, a permutation analysis will be computed across all electrodes, for the specific frequency band and time window.
 i.	Significant electrodes are shown in a topographic map.
-ii.	Use this permutation result to specify which electrodes should be exported to file, for further analysis.
-
-Resting Data (Not yet analysed)
-
-1.	This is at the end of each block of trials – roughly 3 mins per participant
-2.	Data already imported to EEGLAB from original set file for each condition
-3.	New prep loop to find last block ended trigger (S  2), and then save from this trigger until the end of the data. Concatenate this block with all other rest files.
-4.	Same preprocessing as before
-5.	May need to trim blocks to be the same length due to slight differences in duration
-6.	Compute power spectra (different method to calculate absolute power)
-7.	Statistics – permutation across electrodes and conditions separately for each frequency band with statcond.m
-
+ii.	Data exported to grand file with all electrodes for the specified frequency band and time window of interest - this file is used for further analysis
